@@ -11,7 +11,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 
 
@@ -122,12 +127,6 @@ public class ProductoController {
         tvProducto.setItems(oList);
     }
 
-
-
-
-
-
-
     @FXML
     void acercaDe(ActionEvent event) {
         String msg="Gestión de prodcutos 1.0\nAutor: Aitor Gamarra";
@@ -146,11 +145,49 @@ public class ProductoController {
 
     @FXML
     void limpiar(ActionEvent event) {
+        // Limpiar los campos de texto
+        tfCodigo.clear();  // Limpia el campo de código
+        tfNombre.clear();  // Limpia el campo de nombre
+        tfPrecio.clear();  // Limpia el campo de precio
 
+        // Desmarcar el CheckBox de disponible
+        cbDisponible.setSelected(false);  // Desmarca el CheckBox
+
+        // Limpiar la imagen (restablecer la imagen a null o una imagen predeterminada)
+        ivFoto.setImage(null);  // Limpia la imagen
+
+        // Deshabilitar el botón de actualizar
+        btnActualizar.setDisable(true);  // Deshabilita el botón de actualizar
+        btnCrear.setDisable(false);  // Habilita el botón de crear, si es necesario
+
+        // Deseleccionar cualquier fila seleccionada en la tabla
+        tvProducto.getSelectionModel().clearSelection();  // Elimina la selección en la tabla
     }
+
+
 
     @FXML
     void selFoto(ActionEvent event) {
+        File archivo = seleccionarArchivo();
 
+        if (archivo != null) {
+            try {
+                // Carga la imagen y la muestra en el ImageView
+                InputStream inputStream = new FileInputStream(archivo);
+                ivFoto.setImage(new Image(inputStream));
+            } catch (IOException e) {
+                Utilidades.mostrarAlerta(Alert.AlertType.ERROR, "Error al cargar Imagen","ERROR");
+            }
+        }
+    }
+    /**
+     * Abre un selector de archivos que permite al usuario seleccionar una imagen (.jpg o .png).
+     * @return El archivo seleccionado, o null si no se seleccionó ninguno.
+     */
+    private File seleccionarArchivo() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar foto");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos de Image", "*.jpg", "*.png"));
+        return fileChooser.showOpenDialog(null);
     }
 }

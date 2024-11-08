@@ -68,4 +68,8 @@ public class ModeloProducto {
     public Blob getImagen() {
         return imagen;
     }
+
+    public void setImagen(Blob imagen) {
+        this.imagen = imagen;
+    }
 }
