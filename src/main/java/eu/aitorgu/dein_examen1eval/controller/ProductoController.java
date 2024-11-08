@@ -6,12 +6,16 @@ import eu.aitorgu.dein_examen1eval.util.Utilidades;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -92,6 +96,8 @@ public class ProductoController {
                         Utilidades.mostrarAlerta(Alert.AlertType.ERROR, "Error al cargar la imagen","ERROR");
                         ivFoto.setImage(null);
                     }
+                }else{
+                    ivFoto.setImage(null);
                 }
 
 
@@ -196,9 +202,15 @@ public class ProductoController {
         File archivo = seleccionarArchivo();
 
         if (archivo != null) {
+
+            if (!esTamanoValido(archivo)) {
+                Utilidades.mostrarAlerta(Alert.AlertType.ERROR, "La imagen no puede tener un tamaño mayor a 64kb", "ERROR tamaño imagen");
+                return;
+            }
             try {
                 // Carga la imagen y la muestra en el ImageView
                 InputStream inputStream = new FileInputStream(archivo);
+
                 ivFoto.setImage(new Image(inputStream));
                 fotoProducto=DaoProducto.convertFileToBlob(archivo);
             } catch (IOException e) {
@@ -266,8 +278,57 @@ public class ProductoController {
 
     @FXML
     void verFoto(ActionEvent event) {
+        // Obtiene el producto seleccionado de la tabla
+        ModeloProducto productoSeleccionado = tvProducto.getSelectionModel().getSelectedItem();
 
+        if (productoSeleccionado != null) {
+            // Verifica si el producto tiene imagen
+            if (productoSeleccionado.getImagen() != null) {
+                // Crea una nueva ventana emergente para mostrar la imagen
+                Stage ventanaFoto = new Stage();
+                ventanaFoto.setTitle("Imagen del Producto");
+
+                // Crea un ImageView para mostrar la imagen
+                ImageView imageView = new ImageView();
+                try {
+                    // Carga la imagen desde el Blob
+                    Image img = new Image(productoSeleccionado.getImagen().getBinaryStream());
+                    imageView.setImage(img);
+                    imageView.setFitWidth(300);  // Ajusta el tamaño de la imagen
+                    imageView.setFitHeight(300); // Ajusta el tamaño de la imagen
+                } catch (SQLException e) {
+                    Utilidades.mostrarAlerta(Alert.AlertType.ERROR, "Error al cargar la imagen", "ERROR");
+                    return;
+                }
+
+                // Crea un layout para la ventana emergente
+                VBox vbox = new VBox(imageView);
+                vbox.setAlignment(Pos.CENTER);
+
+                // Crea la escena y la asocia con la ventana
+                Scene scene = new Scene(vbox, 350, 350);
+                ventanaFoto.setScene(scene);
+
+                // Muestra la ventana emergente
+                ventanaFoto.show();
+            } else {
+                Utilidades.mostrarAlerta(Alert.AlertType.WARNING, "El producto no tiene imagen", "ADVERTENCIA");
+            }
+        } else {
+            Utilidades.mostrarAlerta(Alert.AlertType.ERROR, "No has seleccionado ningún producto", "ERROR");
+        }
     }
+
+    /**
+     * Verifica si el tamaño del archivo es válido (máximo 64 KB).
+     * @param file El archivo a verificar.
+     * @return true si el tamaño es válido, false de lo contrario.
+     */
+    private boolean esTamanoValido(File file) {
+        double kbs = (double) file.length() / 1024;
+        return kbs <= 64; // Tamaño máximo de 64 KB
+    }
+
 
     private void limpiarDatos(){
         // Limpiar los campos de texto

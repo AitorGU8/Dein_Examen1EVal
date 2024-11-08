@@ -30,7 +30,7 @@ public class DaoProducto {
         try {
             conexion = new ConexionBBDD();
             System.out.println(producto.toString());
-            String consulta = "INSERT INTO productos (codigo,nombre, precio, disponible, imagen) VALUES (?, ?, ?, ?)";
+            String consulta = "INSERT INTO productos (codigo,nombre, precio, disponible, imagen) VALUES (?,?, ?, ?, ?)";
             PreparedStatement pstmt = conexion.getConexion().prepareStatement(consulta);
             pstmt.setString(1, producto.getCodigo());
             pstmt.setString(2, producto.getNombre());
