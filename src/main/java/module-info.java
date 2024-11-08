@@ -3,6 +3,7 @@ module eu.aitorgu.dein_examen1eval {
     requires javafx.fxml;
     requires java.sql;
     requires java.desktop;
+    requires commons.beanutils;
 
 
     opens eu.aitorgu.dein_examen1eval to javafx.fxml;

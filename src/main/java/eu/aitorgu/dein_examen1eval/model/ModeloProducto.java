@@ -8,14 +8,14 @@ import javax.swing.plaf.basic.BasicListUI;
 import java.sql.Blob;
 
 public class ModeloProducto {
-    private SimpleIntegerProperty codigo;
+    private SimpleStringProperty codigo;
     private SimpleStringProperty nombre;
     private SimpleFloatProperty precio;
     private SimpleIntegerProperty disponible;
     private Blob imagen;
 
-    public ModeloProducto(int codigo, String nombre, float precio, int disponible, Blob imagen) {
-        this.codigo = new SimpleIntegerProperty(codigo);
+    public ModeloProducto(String codigo, String nombre, float precio, int disponible, Blob imagen) {
+        this.codigo = new SimpleStringProperty(codigo);
         this.nombre = new SimpleStringProperty(nombre);
         this.precio = new SimpleFloatProperty(precio);
         this.disponible =  new SimpleIntegerProperty(disponible);
@@ -33,11 +33,11 @@ public class ModeloProducto {
                 '}';
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo.get();
     }
 
-    public SimpleIntegerProperty codigoProperty() {
+    public SimpleStringProperty codigoProperty() {
         return codigo;
     }
 
