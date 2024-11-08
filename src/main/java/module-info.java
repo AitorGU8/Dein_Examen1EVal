@@ -2,6 +2,7 @@ module eu.aitorgu.dein_examen1eval {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires java.desktop;
 
 
     opens eu.aitorgu.dein_examen1eval to javafx.fxml;
