@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.SQLException;
 
 
@@ -65,6 +66,8 @@ public class ProductoController {
 
     private ObservableList<ModeloProducto> oList=DaoProducto.cargarProductos();
 
+    private Blob fotoProducto;
+
     @FXML
     void initialize() {
         oList = DaoProducto.cargarProductos();
@@ -76,6 +79,7 @@ public class ProductoController {
             if (newValue != null) {
                 // Llenar los campos con los datos del producto seleccionado
                 tfCodigo.setText(String.valueOf(newValue.getCodigo())); // Código
+                tfCodigo.setEditable(false);
                 tfNombre.setText(newValue.getNombre()); // Nombre
                 tfPrecio.setText(String.valueOf(newValue.getPrecio())); // Precio
                 cbDisponible.setSelected(newValue.getDisponible() == 1); // Disponible (true si 1, false si 0)
@@ -98,6 +102,7 @@ public class ProductoController {
     }
 
     private void cargarProductos() {
+        oList=DaoProducto.cargarProductos();
         // Configurar las celdas de la tabla para mostrar correctamente los datos
         tcCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         tcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -135,12 +140,50 @@ public class ProductoController {
 
     @FXML
     void actualizar(ActionEvent event) {
+        String msgErr= validarCampos();
 
+        if(msgErr.isEmpty()){
+            int dispo=0;
+
+            if(cbDisponible.isSelected()){
+                dispo=1;
+            }
+
+            ModeloProducto mPro=new ModeloProducto(
+                    tfCodigo.getText(),
+                    tfNombre.getText(),
+                    Float.parseFloat(tfPrecio.getText()),
+                    dispo,
+                    fotoProducto);
+            DaoProducto.actualizarProducto(mPro);
+            Utilidades.mostrarAlerta(Alert.AlertType.INFORMATION,"Producto actualizado","Actualizado");
+        }
+        cargarProductos();
     }
 
     @FXML
     void crear(ActionEvent event) {
+        String msgErr= validarCampos();
 
+        if(msgErr.isEmpty()){
+            int dispo=0;
+
+            if(cbDisponible.isSelected()){
+                dispo=1;
+            }
+
+            ModeloProducto mPro=new ModeloProducto(
+                    tfCodigo.getText(),
+                    tfNombre.getText(),
+                    Float.parseFloat(tfPrecio.getText()),
+                    dispo,
+                    fotoProducto);
+            DaoProducto.crearProducto(mPro);
+            Utilidades.mostrarAlerta(Alert.AlertType.INFORMATION,"Producto creado","Creado");
+        }else{
+            Utilidades.mostrarAlerta(Alert.AlertType.ERROR,msgErr,"ERROR");
+        }
+        cargarProductos();
     }
 
     @FXML
@@ -175,6 +218,7 @@ public class ProductoController {
                 // Carga la imagen y la muestra en el ImageView
                 InputStream inputStream = new FileInputStream(archivo);
                 ivFoto.setImage(new Image(inputStream));
+                fotoProducto=DaoProducto.convertFileToBlob(archivo);
             } catch (IOException e) {
                 Utilidades.mostrarAlerta(Alert.AlertType.ERROR, "Error al cargar Imagen","ERROR");
             }
@@ -190,4 +234,35 @@ public class ProductoController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos de Image", "*.jpg", "*.png"));
         return fileChooser.showOpenDialog(null);
     }
+
+    @FXML
+    private String validarCampos() {
+        StringBuilder mensajeError = new StringBuilder();
+
+        // Validar el código
+        if(!tfCodigo.isDisabled()){
+            if (tfCodigo.getText().trim().isEmpty()) {
+                mensajeError.append("El código no puede estar vacío.\n");
+            }
+            if(tfCodigo.getText().trim().length()>5){
+                mensajeError.append("El código no puede tener mas de 4 caracteres.\n");
+            }
+        }
+
+        // Validar el nombre
+        if (tfNombre.getText().trim().isEmpty()) {
+            mensajeError.append("El nombre no puede estar vacío.\n");
+        }
+
+        // Validar el precio
+        try {
+            Float.parseFloat(tfPrecio.getText().trim());  // Intentar convertir el precio a un número
+        } catch (NumberFormatException e) {
+            mensajeError.append("El precio debe ser un número válido.\n");
+        }
+
+        return mensajeError.toString();  // Devuelve todos los errores concatenados
+
+    }
+
 }

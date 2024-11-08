@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-import javax.swing.plaf.basic.BasicListUI;
 import java.sql.Blob;
 
 public class ModeloProducto {

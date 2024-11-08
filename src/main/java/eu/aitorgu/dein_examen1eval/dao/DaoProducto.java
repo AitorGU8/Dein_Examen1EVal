@@ -17,12 +17,14 @@ public class DaoProducto {
     public static void crearProducto(ModeloProducto producto) {
         try {
             conexion = new ConexionBBDD();
-            String consulta = "INSERT INTO productos (nombre, precio, disponible, imagen) VALUES (, ?, ?, ?, ?)";
+            System.out.println(producto.toString());
+            String consulta = "INSERT INTO productos (codigo,nombre, precio, disponible, imagen) VALUES (?, ?, ?, ?)";
             PreparedStatement pstmt = conexion.getConexion().prepareStatement(consulta);
-            pstmt.setString(1, producto.getNombre());
-            pstmt.setFloat(2, producto.getPrecio());
-            pstmt.setInt(3, producto.getDisponible());
-            pstmt.setBlob(4, producto.getImagen());
+            pstmt.setString(1, producto.getCodigo());
+            pstmt.setString(2, producto.getNombre());
+            pstmt.setFloat(3, producto.getPrecio());
+            pstmt.setInt(4, producto.getDisponible());
+            pstmt.setBlob(5, producto.getImagen());
             pstmt.executeUpdate();
             System.out.println("Producto creado exitosamente.");
             conexion.CloseConexion();
