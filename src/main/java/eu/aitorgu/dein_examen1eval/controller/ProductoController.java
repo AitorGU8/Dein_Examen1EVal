@@ -156,7 +156,6 @@ public class ProductoController {
                     dispo,
                     fotoProducto);
             DaoProducto.actualizarProducto(mPro);
-            Utilidades.mostrarAlerta(Alert.AlertType.INFORMATION,"Producto actualizado","Actualizado");
         }
         cargarProductos();
     }
@@ -179,7 +178,6 @@ public class ProductoController {
                     dispo,
                     fotoProducto);
             DaoProducto.crearProducto(mPro);
-            Utilidades.mostrarAlerta(Alert.AlertType.INFORMATION,"Producto creado","Creado");
         }else{
             Utilidades.mostrarAlerta(Alert.AlertType.ERROR,msgErr,"ERROR");
         }
@@ -188,23 +186,7 @@ public class ProductoController {
 
     @FXML
     void limpiar(ActionEvent event) {
-        // Limpiar los campos de texto
-        tfCodigo.clear();  // Limpia el campo de código
-        tfNombre.clear();  // Limpia el campo de nombre
-        tfPrecio.clear();  // Limpia el campo de precio
-
-        // Desmarcar el CheckBox de disponible
-        cbDisponible.setSelected(false);  // Desmarca el CheckBox
-
-        // Limpiar la imagen (restablecer la imagen a null o una imagen predeterminada)
-        ivFoto.setImage(null);  // Limpia la imagen
-
-        // Deshabilitar el botón de actualizar
-        btnActualizar.setDisable(true);  // Deshabilita el botón de actualizar
-        btnCrear.setDisable(false);  // Habilita el botón de crear, si es necesario
-
-        // Deseleccionar cualquier fila seleccionada en la tabla
-        tvProducto.getSelectionModel().clearSelection();  // Elimina la selección en la tabla
+        limpiarDatos();
     }
 
 
@@ -263,6 +245,48 @@ public class ProductoController {
 
         return mensajeError.toString();  // Devuelve todos los errores concatenados
 
+    }
+    @FXML
+    void eliminar(ActionEvent event) {
+        ModeloProducto mpro=tvProducto.getSelectionModel().getSelectedItem();
+
+        if(mpro!=null){
+            if(Utilidades.mostrarConfirmacionBorrado(mpro.getCodigo())){
+                DaoProducto.borrarProducto(mpro);
+                limpiarDatos();
+                cargarProductos();
+            }else{
+                Utilidades.mostrarAlerta(Alert.AlertType.WARNING,"Operacion cancelada","CANCELADA");
+            }
+
+        }else {
+            Utilidades.mostrarAlerta(Alert.AlertType.ERROR,"No has seleccionado ningun producto","ERROR");
+        }
+    }
+
+    @FXML
+    void verFoto(ActionEvent event) {
+
+    }
+
+    private void limpiarDatos(){
+        // Limpiar los campos de texto
+        tfCodigo.clear();  // Limpia el campo de código
+        tfNombre.clear();  // Limpia el campo de nombre
+        tfPrecio.clear();  // Limpia el campo de precio
+
+        // Desmarcar el CheckBox de disponible
+        cbDisponible.setSelected(false);  // Desmarca el CheckBox
+
+        // Limpiar la imagen (restablecer la imagen a null o una imagen predeterminada)
+        ivFoto.setImage(null);  // Limpia la imagen
+
+        // Deshabilitar el botón de actualizar
+        btnActualizar.setDisable(true);  // Deshabilita el botón de actualizar
+        btnCrear.setDisable(false);  // Habilita el botón de crear, si es necesario
+
+        // Deseleccionar cualquier fila seleccionada en la tabla
+        tvProducto.getSelectionModel().clearSelection();  // Elimina la selección en la tabla
     }
 
 }

@@ -2,18 +2,30 @@ package eu.aitorgu.dein_examen1eval.dao;
 
 import eu.aitorgu.dein_examen1eval.bbdd.ConexionBBDD;
 import eu.aitorgu.dein_examen1eval.model.ModeloProducto;
+import eu.aitorgu.dein_examen1eval.util.Utilidades;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 
+/**
+ * Clase encargada de realizar las operaciones CRUD sobre la tabla 'productos' en la base de datos.
+ *
+ * Proporciona métodos para crear, actualizar, eliminar y cargar productos de la base de datos.
+ */
 public class DaoProducto {
+
     private static ConexionBBDD conexion;
 
-    // Método para crear un producto en la tabla 'productos' usando un objeto ModeloProducto
+    /**
+     * Crea un nuevo producto en la tabla 'productos' de la base de datos.
+     *
+     * @param producto El objeto ModeloProducto que contiene los datos del producto a crear.
+     */
     public static void crearProducto(ModeloProducto producto) {
         try {
             conexion = new ConexionBBDD();
@@ -26,13 +38,18 @@ public class DaoProducto {
             pstmt.setInt(4, producto.getDisponible());
             pstmt.setBlob(5, producto.getImagen());
             pstmt.executeUpdate();
-            System.out.println("Producto creado exitosamente.");
+            Utilidades.mostrarAlerta(Alert.AlertType.INFORMATION,"Producto creado","Creado");
             conexion.CloseConexion();
         } catch (SQLException e) {
             System.err.println("Error al crear el producto: " + e.getMessage());
         }
     }
-    // Método para actualizar un producto existente en la tabla 'productos' usando un objeto ModeloProducto
+
+    /**
+     * Actualiza un producto existente en la tabla 'productos' de la base de datos.
+     *
+     * @param producto El objeto ModeloProducto que contiene los datos del producto a actualizar.
+     */
     public static void actualizarProducto(ModeloProducto producto) {
         try {
             conexion = new ConexionBBDD();
@@ -45,16 +62,21 @@ public class DaoProducto {
             pstmt.setString(5, producto.getCodigo());
             int filasAfectadas = pstmt.executeUpdate();
             if (filasAfectadas > 0) {
-                System.out.println("Producto actualizado exitosamente.");
+                Utilidades.mostrarAlerta(Alert.AlertType.INFORMATION,"Producto actualizado","Actualizado");
             } else {
-                System.out.println("No se encontró el producto con el código especificado.");
+                Utilidades.mostrarAlerta(Alert.AlertType.ERROR,"No se encontró el producto con el código especificado.","ERROR");
             }
             conexion.CloseConexion();
         } catch (SQLException e) {
             System.err.println("Error al actualizar el producto: " + e.getMessage());
         }
     }
-    // Método para borrar un producto de la tabla 'productos' usando un objeto ModeloProducto
+
+    /**
+     * Elimina un producto de la tabla 'productos' en la base de datos.
+     *
+     * @param producto El objeto ModeloProducto que contiene los datos del producto a eliminar.
+     */
     public static void borrarProducto(ModeloProducto producto) {
         try {
             conexion = new ConexionBBDD();
@@ -63,17 +85,22 @@ public class DaoProducto {
             pstmt.setString(1, producto.getCodigo());
             int filasAfectadas = pstmt.executeUpdate();
             if (filasAfectadas > 0) {
-                System.out.println("Producto borrado exitosamente.");
+                Utilidades.mostrarAlerta(Alert.AlertType.INFORMATION,"Producto Eliminado","Eliminado");
             } else {
-                System.out.println("No se encontró el producto con el código especificado.");
+                Utilidades.mostrarAlerta(Alert.AlertType.ERROR,"No se encontró el producto con el código especificado.","ERROR");
             }
             conexion.CloseConexion();
         } catch (SQLException e) {
+            Utilidades.mostrarAlerta(Alert.AlertType.ERROR,"Error al borrar el producto: " + e.getMessage(),"ERROR");
             System.err.println("Error al borrar el producto: " + e.getMessage());
         }
     }
 
-    // Método para obtener todos los productos de la tabla 'productos'
+    /**
+     * Obtiene todos los productos de la tabla 'productos' de la base de datos.
+     *
+     * @return Una lista observable de objetos ModeloProducto con los datos de los productos en la base de datos.
+     */
     public static ObservableList<ModeloProducto> cargarProductos() {
         ObservableList<ModeloProducto> listaProductos = FXCollections.observableArrayList();
         try {
@@ -99,6 +126,7 @@ public class DaoProducto {
         }
         return listaProductos;
     }
+
     /**
      * Convierte un archivo de imagen en un objeto `Blob` para ser almacenado en la base de datos.
      *
@@ -126,5 +154,4 @@ public class DaoProducto {
         }
         return blob;
     }
-
 }

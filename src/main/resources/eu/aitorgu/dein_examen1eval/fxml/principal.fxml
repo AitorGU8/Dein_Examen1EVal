@@ -72,8 +72,8 @@
          <contextMenu>
             <ContextMenu>
               <items>
-                <MenuItem mnemonicParsing="false" text="Ver Foto" />
-                  <MenuItem mnemonicParsing="false" text="Eliminar" />
+                <MenuItem mnemonicParsing="false" onAction="#verFoto" text="Ver Foto" />
+                  <MenuItem mnemonicParsing="false" onAction="#eliminar" text="Eliminar" />
               </items>
             </ContextMenu>
          </contextMenu>
